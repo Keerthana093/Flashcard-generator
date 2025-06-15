@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Flashcard Maker - Learn Smart, Learn Fun!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        .bg-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(1) {
+            width: 60px;
+            height: 40px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-card:nth-child(2) {
+            width: 80px;
+            height: 50px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-card:nth-child(3) {
+            width: 70px;
+            height: 45px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .floating-card:nth-child(4) {
+            width: 90px;
+            height: 55px;
+            bottom: 15%;
+            right: 10%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            width: 400px;
+            max-width: 90vw;
+            text-align: center;
+            transform: translateY(0);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .title {
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: #adb5bd;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .switch-form {
+            margin-top: 25px;
+            color: #666;
+        }
+
+        .switch-form a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .switch-form a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .success-message, .error-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .social-login {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .social-btn:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-primary.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn-primary.loading .loading {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-decoration">
+        <div class="floating-card"></div>
+        <div class="floating-card"></div>
+        <div class="floating-card"></div>
+        <div class="floating-card"></div>
+    </div>
+
+    <div class="auth-container">
+        <div class="logo">🧠</div>
+        <h1 class="title">GenAI Flashcards</h1>
+        <p class="subtitle">Learn Smart, Learn Fun! 🚀</p>
+
+        <!-- Sign In Form -->
+        <form id="signin-form" class="form active">
+            <div id="signin-message"></div>
+            
+            <div class="form-group">
+                <label for="signin-email">Email Address</label>
+                <input type="email" id="signin-email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="signin-password">Password</label>
+                <input type="password" id="signin-password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Sign In to Start Learning
+                <div class="loading"></div>
+            </button>
+
+            <div class="switch-form">
+                Don't have an account? <a href="#" onclick="switchToSignUp()">Sign Up Here!</a>
+            </div>
+        </form>
+
+        <!-- Sign Up Form -->
+        <form id="signup-form" class="form">
+            <div id="signup-message"></div>
+
+            <div class="form-group">
+                <label for="signup-name">Full Name</label>
+                <input type="text" id="signup-name" name="name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="signup-email">Email Address</label>
+                <input type="email" id="signup-email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" name="password" placeholder="Create a strong password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="signup-confirm-password">Confirm Password</label>
+                <input type="password" id="signup-confirm-password" name="confirm_password" placeholder="Confirm your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Join the Learning Adventure!
+                <div class="loading"></div>
+            </button>
+
+            <div class="switch-form">
+                Already have an account? <a href="#" onclick="switchToSignIn()">Sign In Here!</a>
+            </div>
+        </form>
+
+        <!-- Social Login Options -->
+        <div class="social-login">
+            <p style="color: #666; margin-bottom: 15px; font-size: 14px;">Or continue with</p>
+            <button class="social-btn" onclick="socialLogin('google')">
+                🔍 Continue with Google
+            </button>
+            <button class="social-btn" onclick="socialLogin('github')">
+                🐱 Continue with GitHub
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Form switching functions
+        function switchToSignUp() {
+            document.getElementById('signin-form').classList.remove('active');
+            document.getElementById('signup-form').classList.add('active');
+            clearMessages();
+        }
+
+        function switchToSignIn() {
+            document.getElementById('signup-form').classList.remove('active');
+            document.getElementById('signin-form').classList.add('active');
+            clearMessages();
+        }
+
+        function clearMessages() {
+            document.getElementById('signin-message').innerHTML = '';
+            document.getElementById('signup-message').innerHTML = '';
+        }
+
+        // Show message function
+        function showMessage(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="${type}-message">${message}</div>`;
+        }
+
+        // Sign In Form Handler
+        document.getElementById('signin-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = this.querySelector('.btn-primary');
+            btn.classList.add('loading');
+            
+            const formData = new FormData(this);
+            const data = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+
+            try {
+                // Simulate API call (replace with actual Flask backend call)
+                await simulateLogin(data);
+                showMessage('signin-message', '🎉 Welcome back! Redirecting to your dashboard...', 'success');
+                
+                setTimeout(() => {
+                    // Redirect to dashboard (replace with actual redirect)
+                    window.location.href = '/dashboard';
+                }, 2000);
+                
+            } catch (error) {
+                showMessage('signin-message', '❌ Invalid credentials. Please try again!', 'error');
+            } finally {
+                btn.classList.remove('loading');
+            }
+        });
+
+        // Sign Up Form Handler
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = this.querySelector('.btn-primary');
+            btn.classList.add('loading');
+            
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                confirm_password: formData.get('confirm_password')
+            };
+
+            // Validate passwords match
+            if (data.password !== data.confirm_password) {
+                showMessage('signup-message', '❌ Passwords do not match!', 'error');
+                btn.classList.remove('loading');
+                return;
+            }
+
+            // Validate password strength
+            if (data.password.length < 6) {
+                showMessage('signup-message', '❌ Password must be at least 6 characters long!', 'error');
+                btn.classList.remove('loading');
+                return;
+            }
+
+            try {
+                // Simulate API call (replace with actual Flask backend call)
+                await simulateSignup(data);
+                showMessage('signup-message', '🎉 Account created successfully! Welcome to GenAI Flashcards!', 'success');
+                
+                setTimeout(() => {
+                    // Redirect to dashboard (replace with actual redirect)
+                    window.location.href = '/dashboard';
+                }, 2000);
+                
+            } catch (error) {
+                showMessage('signup-message', '❌ Registration failed. Email might already exist!', 'error');
+            } finally {
+                btn.classList.remove('loading');
+            }
+        });
+
+        // Simulate API calls (replace with actual Flask backend calls)
+        async function simulateLogin(data) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulate validation
+                    if (data.email && data.password.length >= 6) {
+                        resolve({ success: true });
+                    } else {
+                        reject(new Error('Invalid credentials'));
+                    }
+                }, 1500);
+            });
+        }
+
+        async function simulateSignup(data) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulate validation
+                    if (data.name && data.email && data.password.length >= 6) {
+                        resolve({ success: true });
+                    } else {
+                        reject(new Error('Registration failed'));
+                    }
+                }, 1500);
+            });
+        }
+
+        // Social login handler
+        function socialLogin(provider) {
+            showMessage('signin-message', `🚀 Redirecting to ${provider} login...`, 'success');
+            
+            setTimeout(() => {
+                // Implement actual social login redirect
+                console.log(`Redirecting to ${provider} OAuth...`);
+                // window.location.href = `/auth/${provider}`;
+            }, 1000);
+        }
+
+        // Add input animation effects
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateX(2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Add welcome animation on load
+        window.addEventListener('load', function() {
+            const container = document.querySelector('.auth-container');
+            container.style.animation = 'slideUp 0.8s ease-out';
+        });
+    </script>
+</body>
+</html>
