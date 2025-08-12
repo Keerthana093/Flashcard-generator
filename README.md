@@ -81,4 +81,3 @@ This project is open-source – feel free to contribute, improve, and share! �
 
 Enjoy learning with AI-powered flashcards! 🎓✨🚀 If you have any questions or suggestions, feel free to reach out.
 
-Would you like me to add an AI-generated hero image for your project’s branding? 🤖✨ Let me know! 😊
